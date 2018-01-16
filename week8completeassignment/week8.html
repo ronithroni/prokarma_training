@@ -1,0 +1,375 @@
+<html>
+
+<head>
+    <style>
+        #top {
+
+            height: 60%;
+            width: 100%;
+        }
+        #bottomleft {
+            display: none;
+            height: 100%;
+            float: left;
+            width: 50%;
+       }
+
+        #bottomright {
+            float: right;
+            display: none;
+            height: 100%;
+            width: 50%;
+        }
+		#myTable{
+		border-collapse: collapse;
+		}
+    </style>
+    <title>JQueryJSON</title>
+</head>
+
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        var row = 0;
+
+        var dummy;
+
+        var temp = {};
+        var glbTaskList = [];
+        $(function () {
+            $("#myTable").append("<tr><th>Title</th><th>Description</th><th>Assignee</th><th>EstimatedHours</th><th>STartDate</th><th>EndDate</th><th>Select</th></tr>");
+            var gtbTaskList = '{"tasklist":[{"title":"My First Task","Description": "My FirstTask","Assignee":"Walter","Estimated_Hours": 10,"Start_Date":"03-JAN-2011","End_Date":"13-FEB-2011"},{"title":"My First Task","Description": "My FirstTask","Assignee":"Walter","Estimated_Hours": 10,"Start_Date":"03-JAN-2011","End_Date":"13-FEB-2011"},{"title":"My First Task","Description": "My FirstTask","Assignee":"Walter","Estimated_Hours": 10,"Start_Date":"03-JAN-2011","End_Date":"13-FEB-2011"}]}';
+            var objectparser = JSON.parse(gtbTaskList);
+            for (var i = 0; i < objectparser.tasklist.length; i++) {
+                $("#myTable").append("<tr><td>" + objectparser.tasklist[i].title + "</td><td>" + objectparser.tasklist[i].Description + "</td><td>" + objectparser.tasklist[i].Assignee + "</td><td>" + objectparser.tasklist[i].Estimated_Hours + "</td><td>" + objectparser.tasklist[i].Start_Date + "</td><td>" + objectparser.tasklist[i].End_Date + "</td><td><input type='radio' name='task'></td></tr>");
+
+            }
+            glbTaskList.push(objectparser);
+
+            $("#Addtogglebutton").click(function () {
+                $("#bottomleft").toggle();
+            });
+            $("#EditToggleButton").click(function () {
+            var  c=select();
+            if(c){
+                Edit();
+                $("#bottomright").toggle();
+                }
+                else{
+                alert("Please select a row");
+                }
+            });
+            $("#removeButton").click(function(){
+            var row = select();
+            if(row){
+            var result = confirm("Do you want to delete really? ");
+            if (result) {
+                row.parentElement.removeChild(row);
+            }
+            }
+            else{
+            alert("Please select a row");
+            }
+        });
+        $("#displayButton").click(function(){
+            alert(JSON.stringify(glbTaskList));
+        });
+        
+        });
+
+        function validateinsertTasks() {
+            var titlevalidation = $("#title").val();
+            var descriptionvalidation = $("#description").val();
+            var assigneevalidation = $("#assignee").val();
+            var estimatedhoursvalidation = $("#estimatedhours").val();
+            var startDatevalidation = $("#startDate").val();
+            var endDatevalidation = $("#endDate").val();
+            var numberscheck = /^[0-9]+$/;
+            var start = startDatevalidation.split("-");
+            var end = endDatevalidation.split("-");
+            var boolcheck = true;
+            if (!(titlevalidation.match(/[a-zA-Z]/g))) {
+                alert("Title should contain only alphabets");
+                boolcheck = false;
+            }
+            if (!descriptionvalidation.match(/[a-zA-Z]/g)) {
+                alert("Description should contain only alphabets");
+                boolcheck = false;
+            }
+            if (assigneevalidation == "option") {
+                alert('Please select a valid option for the assignee');
+                boolcheck = false;
+            }
+            if (!estimatedhoursvalidation.match(numberscheck)) {
+                alert('EstimatedHours cannot be words,Only numbers must  be entered');
+                boolcheck = false;
+            }
+            if (start == "") {
+                alert("StartDate is missing");
+                boolcheck = false;
+            }
+            if (end == "") {
+                alert('End Date is missing');
+                boolcheck = false;
+            }
+            
+            return boolcheck;
+        }
+        function validateEditedTasks() {
+            var edittitlevalidation = $("#editTitle").val();
+            var editdescriptionvalidation = $("#editDescription").val();
+            var editassigneevalidation = $("#editAssignee").val();
+            var editestimatedhoursvalidation = $("#editEstimatedhours").val();
+            var editstartDatevalidation = $("#editstartDate").val();
+            var editendDatevalidation = $("#editendDate").val();
+            var editletters = /^[A-Za-z]+$/;
+            var editnumbers = /^[0-9]+$/;
+            var editstart = editstartDatevalidation.split("-");
+            var editend = editendDatevalidation.split("-");
+            var editboolcheck = true;
+            if (!edittitlevalidation.match(editletters)) {
+                alert("Title should contain only alphabets");
+                editboolcheck = false;
+            }
+            if (!editdescriptionvalidation.match(editletters)) {
+                alert("Title should contain only alphabets");
+                editboolcheck = false;
+            }
+            if (editassigneevalidation == "option") {
+                alert('Please select a valid option for the assignee');
+                editboolcheck = false;
+            }
+            if (!editestimatedhoursvalidation.match(editnumbers)) {
+                alert('EstimatedHours cannot be words,Only numbers must  be entered');
+                editboolcheck = false;
+            }
+            if (editstart == "") {
+                alert("StartDate is missing");
+                editboolcheck = false;
+            }
+            if (editend == "") {
+                alert('End Date is missing');
+                editboolcheck = false;
+            }
+            return editboolcheck;
+
+
+        }
+        function insertTasks() {
+            var checkforinsertion = validateinsertTasks();
+            if (checkforinsertion) {
+                
+                var addTitle = $("#title").val();
+                var addDesc = $("#description").val();
+                var addAssignee = $("#assignee").val();
+                var addEstimatedHours = $("#estimatedhours").val();
+                var addStartDate = $("#startDate").val();
+                var addEndDate = $("#endDate").val();
+
+                
+                $("#myTable").append("<tr><td>" + addTitle + "</td><td>" + addDesc + "</td><td>" + addAssignee + "</td><td>" + addEstimatedHours + "</td><td>" + addStartDate + "</td><td>" + addEndDate + "</td><td><input type='radio' name='task'></td></tr>");
+                
+
+                var taskstr = JSON.stringify({ Title: $("#title").val(), Description: $("#description").val(), Assignee: $("#assignee").val(), EstimatedHours: $("#estimatedhours").val(), StartDate: $("#startDate").val(), EndDate: $("#endDate").val() });
+                var task=JSON.parse(taskstr);
+                glbTaskList.push(task);
+                alert("Details are successfully entered");
+            }
+            else {
+                alert('As the values are not validated details are entered into the table:');
+            }
+        }
+        
+        function select()
+         {
+           var y;
+          var x = $("[name='task']");
+
+        for(i = 0; i < x.length; i++)
+        {
+          if(x[i].checked)
+         {
+           y=x[i].parentElement.parentElement;
+         }
+         }
+        return y;
+         }
+        function Edit() {
+            var c = select();
+                $("#editTitle").val(c.childNodes[0].firstChild.nodeValue);
+                $("#editDescription").val(c.childNodes[1].firstChild.nodeValue);
+                $("#editAssignee").val(c.childNodes[2].firstChild.nodeValue);
+                $("#editEstimatedhours").val(c.childNodes[3].firstChild.nodeValue);
+                $("#editstartDate").val(c.childNodes[4].firstChild.nodeValue);
+                $("#editendDate").val(c.childNodes[5].firstChild.nodeValue);
+                
+        }
+
+        function editToTable() {
+            var c = select();
+            editvalidate = validateEditedTasks();
+            if (editvalidate) {
+                c.childNodes[0].firstChild.nodeValue = $("#editTitle").val();
+                c.childNodes[1].firstChild.nodeValue = $("#editDescription").val();
+                c.childNodes[2].firstChild.nodeValue = $("#editAssignee").val();
+                c.childNodes[3].firstChild.nodeValue = $("#editEstimatedhours").val();
+                c.childNodes[4].firstChild.nodeValue = $("#editstartDate").val();
+                c.childNodes[5].firstChild.nodeValue = $("#editendDate").val();
+            }
+            else {
+                alert('Edited values are not valid so details are not entered into the table');
+            }
+        }
+
+    </script>
+    <div id="top">
+        <h1>
+            <center>
+                <u>Task List</u>
+            </center>
+        </h1>
+        <center>
+            <table id="myTable" border="1">
+            </table>
+            <br>
+            <br>
+            <input type="button" value="Add" id='Addtogglebutton' style="width:60px;height:27px;border-radius:6px;background-color:#ccc">
+            <input type="button" value="Edit" id='EditToggleButton' style="width:60px;height:27px;border-radius:6px;background-color:#ccc">
+            <input type="button" value="Remove" id='removeButton' style="width:70px;height:27px;border-radius:6px;background-color:#ccc">
+            <input type="button" value="Display as JSON String"  id="displayButton" style="width:20%;height:27px;border-radius:6px;background-color:#ccc">
+        </center>
+    </div>
+    <div id='bottomleft'>
+        <fieldset style="margin-left:10%;width:60%">
+            <legend>
+                <i>
+                    <b>Enter the Task Details:</b>
+                </i>
+            </legend>
+            <table>
+
+                <h2>ADD TASK</h2>
+                <tr>
+                    <td>Title:</td>
+                    <td>
+                        <input type="text" id="title">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>
+                        <input type="text" id="description">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Assignee</td>
+                    <td>
+                        <select id="assignee">
+                            <option value="option">Option</option>
+                            <option value="option1">option1</option>
+                            <option value="option2">option2</option>
+
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Estimate Hours</td>
+                    <td>
+                        <input type="text" id="estimatedhours">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Start Date</td>
+                    <td>
+                        <input type="date" id="startDate">
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>End Date</td>
+                    <td>
+                        <input type="date" id="endDate">
+                    </td>
+
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <input type="button" value="Ok" onClick="insertTasks()" style="width:60px;height:27px;border-radius:6px;background-color:#ccc">&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="reset" value="Cancel" style="width:60px;height:27px;border-radius:6px;background-color:#ccc">
+                </tr>
+            </table>
+            </td>
+            </tr>
+            </table>
+        </fieldset>
+    </div>
+
+    <div id="bottomright">
+        <fieldset style="margin-right:10%;width:60%">
+            <legend>
+                <i>
+                    <b>Details for editing:</b>
+                </i>
+            </legend>
+            <table>
+                <h2>Edit TASK</h2>
+                <table>
+
+                    <tr>
+                        <td>Title:</td>
+                        <td>
+                            <input type="text" id="editTitle">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Description</td>
+                        <td>
+                            <input type="text" id="editDescription">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Assignee</td>
+                        <td>
+                            <select id="editAssignee">
+                                <option value="option">Option</option>
+                                <option value="option1">option1</option>
+                                <option value="option2">option2</option>
+
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Estimate Hours</td>
+                        <td>
+                            <input type="text" id="editEstimatedhours">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Start Date</td>
+                        <td>
+                            <input type="date" id="editstartDate">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="f1_label">End Date</td>
+                        <td>
+                            <input type="date" id="editendDate">
+                        </td>
+
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <input type="button" value="Ok" onclick="editToTable()" style="width:60px;height:27px;border-radius:6px;background-color:#ccc">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="reset" value="Cancel" style="width:60px;height:27px;border-radius:6px;background-color:#ccc">
+                    </tr>
+                </table>
+                </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+</body>
+
+</html>
